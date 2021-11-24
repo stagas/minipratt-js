@@ -1,0 +1,25 @@
+{
+  "extends": "@tsconfig/node16/tsconfig.json",
+  "include": [
+    "playground",
+    "example",
+    "src"
+  ],
+  "ts-node": {
+    "files": true
+  },
+  "compilerOptions": {
+    "lib": [
+      "dom"
+    ],
+    "outDir": "dist",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "declaration": true,
+    "sourceMap": true,
+    "module": "commonjs",
+    "target": "esnext",
+    "strict": true
+  }
+}
