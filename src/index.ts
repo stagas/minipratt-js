@@ -1,13 +1,8 @@
 import { joinRegExp } from 'join-regexp'
 import { annotate } from 'annotate-code'
-import {
-  createLexer,
-  Token,
-  TokenReturn,
-  UnexpectedTokenError,
-} from 'lexer-next'
+import { createLexer, LexerToken, UnexpectedTokenError } from 'lexer-next'
 
-export type Node = Token | Token[]
+export type Node = LexerToken | LexerToken[]
 
 const regexp = joinRegExp(
   [
@@ -27,12 +22,12 @@ const lexer = createLexer(tokenizer)
 export const parse = (input: string) => {
   const { onerror, filter, peek, advance, expect } = lexer(input)
 
-  filter((token: TokenReturn) => token?.group !== 'nul')
+  filter((token: LexerToken) => token.group !== 'nul')
 
-  const panic = (message: string, token: TokenReturn) =>
+  const panic = (message: string, token: LexerToken) =>
     annotate({
-      message: message + ` [${token?.group}]: ${token?.value}`,
-      index: token?.index ?? 0,
+      message: message + ` [${token.group}]: ${token.value}`,
+      index: token.index,
       code: input,
     }).message
 
@@ -61,13 +56,13 @@ export const parse = (input: string) => {
     let mhs
     let rhs
 
-    switch (token?.group) {
+    switch (token.group) {
       case 'ids':
       case 'num':
         lhs = token
         break
       case 'ops':
-        if (token!.value === '(') {
+        if (token.value === '(') {
           lhs = expr_bp(0)
           expect('ops', ')')
           break
@@ -86,8 +81,8 @@ export const parse = (input: string) => {
       const token = peek()
 
       let op
-      switch (token?.group) {
-        case undefined:
+      switch (token.group) {
+        case 'eof':
           break loop
         case 'ops':
           op = token
@@ -133,11 +128,11 @@ export const parse = (input: string) => {
       break
     }
 
-    return lhs as Token | Token[]
+    return lhs as LexerToken | LexerToken[]
   }
 
-  const prefix_binding_power = (op: TokenReturn) => {
-    switch (op!.value) {
+  const prefix_binding_power = (op: LexerToken) => {
+    switch (op.value) {
       case '+':
       case '-':
         return [null, 9]
@@ -146,8 +141,8 @@ export const parse = (input: string) => {
     }
   }
 
-  const postfix_binding_power = (op: TokenReturn) => {
-    switch (op!.value) {
+  const postfix_binding_power = (op: LexerToken) => {
+    switch (op.value) {
       case '!':
       case '[':
         return [11, null]
@@ -156,8 +151,8 @@ export const parse = (input: string) => {
     }
   }
 
-  const infix_binding_power = (op: TokenReturn) => {
-    switch (op!.value) {
+  const infix_binding_power = (op: LexerToken) => {
+    switch (op.value) {
       case '=':
         return [2, 1]
       case '?':

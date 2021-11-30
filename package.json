@@ -88,6 +88,6 @@
   "dependencies": {
     "annotate-code": "^1.0.0",
     "join-regexp": "^1.0.0",
-    "lexer-next": "^0.2.0"
+    "lexer-next": "^2.1.1"
   }
 }
